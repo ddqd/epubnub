@@ -196,7 +196,7 @@ history(EPN, Channel, Limit) when is_integer(Limit) ->
     history(EPN, Channel, integer_to_list(Limit));
 history(EPN, Channel, Limit) when is_list(Limit) ->
     request(EPN#epn.client, [EPN#epn.origin, <<"history">>, EPN#epn.subkey,
-                             Channel, <<"0">>, Limit],
+                             Channel, <<"0">>, list_to_binary(Limit) ],
             EPN#epn.is_ssl).
 
 %%%===================================================================
@@ -249,4 +249,5 @@ request(Client, URLList, IsSSL) ->
     {jsx:decode(Body), Client2}.
 
 bin_join([H | Rest], BinString) ->
-    << H/binary, << <<BinString/binary, B/binary>>  || B <- Rest >>/binary >>.
+    lager:log(info, self(), " HEADE ~p  REST ~p  BinString ~p ", [H, Rest, BinString]),
+    [<< H/binary, << <<BinString/binary, B/binary>>  || B <- Rest >>/binary >>].

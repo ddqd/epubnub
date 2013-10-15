@@ -13,7 +13,8 @@ PROJ_PLT=$(CURDIR)/.depsolver_plt
 compile:
 	@./rebar get-deps compile
 run:
-	erl +K true +A30 -sname epubnub -config config/sys.config -pa ebin deps/*/ebin -eval '[application:start(A) || A <- [kernel, asn1, crypto, public_key, ranch, inets, sync] ]'
+	erl +K true +A30 -sname epubnub -config config/sys.config -pa ebin deps/*/ebin -eval '[application:start(A) || A <- [kernel, sasl, asn1, crypto, jsx, public_key, ssl, ranch, inets, hackney, lager, sync, epubnub] ]'
+
 $(PROJ_PLT):
 	dialyzer --output_plt $(PROJ_PLT) --build_plt \
 		--apps erts kernel stdlib crypto public_key -r deps --fullpath
