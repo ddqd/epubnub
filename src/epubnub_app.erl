@@ -36,6 +36,7 @@ stop(_State) ->
 start_deps() ->
     application:start(sasl),
     application:start(inets),
+    application:start(asn1),
     application:start(crypto),
     application:start(jsx),
     application:start(public_key),
