@@ -40,7 +40,6 @@ unsubscribe(PID) ->
 %%% Supervisor callbacks
 %%%===================================================================
 
-
 %% @private
 -spec init(list()) -> {ok, {SupFlags::any(), [ChildSpec::any()]}} |
                        ignore | {error, Reason::any()}.

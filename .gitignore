@@ -3,3 +3,4 @@ _build/
 ebin/
 .depsolver_plt
 log
+config/sys.config
