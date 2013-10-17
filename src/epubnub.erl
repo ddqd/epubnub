@@ -209,7 +209,7 @@ time() ->
 
 -spec time(record(epn)) -> integer().
 time(EPN) ->
-    hd(request(EPN#epn.client, [EPN#epn.origin, <<"time">>, <<"0">>], EPN#epn.is_ssl)).
+    hd(tuple_to_list(request(EPN#epn.client, [EPN#epn.origin, <<"time">>, <<"0">>], EPN#epn.is_ssl))).
 
 
 %%%===================================================================
