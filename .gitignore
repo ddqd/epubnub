@@ -1,4 +1,3 @@
-*.dump
 deps/
 _build/
 ebin/
