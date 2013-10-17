@@ -222,7 +222,7 @@ uuid() ->
 
 -spec uuid(record(epn)) -> binary().
 uuid(EPN) ->
-    hd(request(EPN#epn.client, [<<"pubnub-prod.appspot.com">>, <<"uuid">>], EPN#epn.is_ssl)).
+    uuid:uuid_to_string(uuid:get_v4()).
 
 %%%===================================================================
 %%% Internal functions
