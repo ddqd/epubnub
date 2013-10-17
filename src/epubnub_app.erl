@@ -10,7 +10,7 @@
 -behaviour(application).
 
 %% Application callbacks
--export([start/2, stop/1, start_deps/0]).
+-export([start/2, stop/1]).
 
 %%%===================================================================
 %%% Application callbacks
@@ -21,6 +21,7 @@
             any()) -> {ok, pid()} | {ok, pid(), State::any()} |
                       {error, Reason::any()}.
 start(_StartType, _StartArgs) ->
+    [application:start(A) || A <- [kernel, sasl, asn1, crypto, jsx, public_key, ssl, ranch, inets, hackney, lager, sync, quickrand, uuid] ],
     case epubnub_sup:start_link() of
         {ok, Pid} ->
             {ok, Pid};
@@ -32,16 +33,7 @@ start(_StartType, _StartArgs) ->
 -spec stop(State::any()) -> ok.
 stop(_State) ->
     ok.
-
-start_deps() ->
-    application:start(sasl),
-    application:start(inets),
-    application:start(asn1),
-    application:start(crypto),
-    application:start(jsx),
-    application:start(public_key),
-    application:start(ssl),
-    application:start(hackney).
+  
 
 %%%===================================================================
 %%% Internal functions

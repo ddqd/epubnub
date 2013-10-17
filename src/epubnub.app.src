@@ -6,11 +6,9 @@
   {applications, [
                   kernel
                   ,stdlib
-                  ,ssl
-                  ,jsx
-                  ,hackney
-                  ,sync
                  ]},
   {mod, {epubnub_app, []}},
   {start_phases, []}
+
  ]}.
+
