@@ -135,7 +135,7 @@ subscribe(EPN, Channel, Callback) ->
 subscribe(EPN, Channel, Function, TimeToken) ->
     try
         {[_, NewTimeToken], Client} = case request(EPN#epn.client, [EPN#epn.origin, <<"subscribe">>,
-                                                                    EPN#epn.subkey, Channel, <<"0">>, TimeToken],
+                                                                    EPN#epn.subkey, Channel, <<"0">>, list_to_binary((binary_to_list(TimeToken)++"?uuid="++epubnub:uuid())) ],
                                               EPN#epn.is_ssl) of
                                           {[[], _], _} = Result ->
                                               Result;
