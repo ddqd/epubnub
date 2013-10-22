@@ -36,7 +36,7 @@
 -define(DEFAULT_SUBKEY, <<"demo">>).
 -define(DEFAULT_SECRETKEY, <<"demo">>).
 -define(DEFAULT_SSL, false).
-
+-define(DEFAULT_CLIENT, <<"client">>).
 -define(WITH_DEFAULT(X, Y), case X of
                                 undefined ->
                                     {ok, Y};
@@ -63,8 +63,9 @@ new() ->
     {ok, PubKey} = ?WITH_DEFAULT(application:get_env(epubnub, pubkey), ?DEFAULT_PUBKEY),
     {ok, SubKey} = ?WITH_DEFAULT(application:get_env(epubnub, subkey), ?DEFAULT_SUBKEY),
     {ok, SecretKey} = ?WITH_DEFAULT(application:get_env(epubnub, secretkey), ?DEFAULT_SECRETKEY),
+    {ok, Client} = ?WITH_DEFAULT(application:get_env(epubnub, client), ?DEFAULT_CLIENT),
     {ok, SSL} = ?WITH_DEFAULT(application:get_env(epubnub, ssl), ?DEFAULT_SSL),
-    #epn{origin=Origin, pubkey=PubKey, subkey=SubKey, secretkey=SecretKey, is_ssl=SSL}.
+    #epn{origin=Origin, pubkey=PubKey, subkey=SubKey, secretkey=SecretKey, client = Client, is_ssl=SSL}.
 
 -spec new(binary()) -> record(epn).
 new(Origin) ->
@@ -82,6 +83,10 @@ new(PubKey, SubKey, SecretKey) ->
 new(Origin, PubKey, SubKey, SecretKey) ->
     #epn{origin=Origin, pubkey=PubKey, subkey=SubKey, secretkey=SecretKey}.
 
+-spec new(binary(), binary(), binary(), binary(), binary()) -> record(epn).
+new(Origin, PubKey, SubKey, SecretKey, Client) ->
+    #epn{origin=Origin, pubkey=PubKey, subkey=SubKey, secretkey=SecretKey, client=Client}.
+    
 %%%===================================================================
 %%% Publish functions
 %%%===================================================================
@@ -222,7 +227,7 @@ uuid() ->
 
 -spec uuid(record(epn)) -> binary().
 uuid(EPN) ->
-    uuid:uuid_to_string(uuid:get_v4()).
+    uuid:uuid_to_string(uuid:get_v5(EPN#epn.client)).
 
 %%%===================================================================
 %%% Internal functions
