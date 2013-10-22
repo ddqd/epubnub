@@ -3,6 +3,5 @@
 [ {epubnub, [{origin, <<"pubsub.pubnub.com">>},
              {pubkey, <<"demo">>},
              {subkey, <<"demo">>},
-             {client, <<"clientName">>},
              {is_ssl, false}]}
  ].
