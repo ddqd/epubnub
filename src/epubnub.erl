@@ -132,16 +132,23 @@ subscribe(EPN, Channel, Callback) ->
     subscribe(EPN, Channel, Callback, <<"0">>).
 
 -spec subscribe(record(epn), binary(), fun(), binary()) -> ok.
+
+subscribe(EPN, Channel, Function, TimeToken) when TimeToken == <<"0">> ->
+    subscribe(EPN, Channel, Function, list_to_binary(binary_to_list(TimeToken)++"?uuid="++epubnub:uuid()));
+
 subscribe(EPN, Channel, Function, TimeToken) ->
+    % lager:log(info, self(), "Subscribe ~p ~n ~p ", [EPN, TimeToken]),
     try
         {[_, NewTimeToken], Client} = case request(EPN#epn.client, [EPN#epn.origin, <<"subscribe">>,
-                                                                    EPN#epn.subkey, Channel, <<"0">>, list_to_binary((binary_to_list(TimeToken)++"?uuid="++epubnub:uuid())) ],
+                                                                    EPN#epn.subkey, Channel, <<"0">>, TimeToken ],
                                               EPN#epn.is_ssl) of
                                           {[[], _], _} = Result ->
                                               Result;
                                           {[Messages, _], _} = Result ->
                                               lists:foreach(Function, Messages),
-                                              Result
+                                              Result;
+                                              Req ->
+                                                lager:log(info, self(), "Req ~p", [Req])
                                       end,
 
         %% Check if a terminate message has been sent to us, stop and return ok atom if so
@@ -225,6 +232,7 @@ uuid() ->
 
 -spec request(tuple(), list(binary()), boolean()) -> json_term().
 request(Client, URLList, IsSSL) ->
+    lager:log(info, self(), "REQUEST ~p ~p", [URLList, Client]),
     case Client of
         undefined ->
             Protocol = case IsSSL of
