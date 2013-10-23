@@ -133,24 +133,17 @@ subscribe(EPN, Channel, Callback) ->
 
 -spec subscribe(record(epn), binary(), fun(), binary()) -> ok.
 
-subscribe(EPN, Channel, Function, TimeToken) when TimeToken == <<"0">> ->
-    subscribe(EPN, Channel, Function, list_to_binary(binary_to_list(TimeToken)++"?uuid="++epubnub:uuid()));
-
 subscribe(EPN, Channel, Function, TimeToken) ->
-    % lager:log(info, self(), "Subscribe ~p ~n ~p ", [EPN, TimeToken]),
     try
         {[_, NewTimeToken], Client} = case request(EPN#epn.client, [EPN#epn.origin, <<"subscribe">>,
-                                                                    EPN#epn.subkey, Channel, <<"0">>, TimeToken ],
+                                                                    EPN#epn.subkey, Channel, <<"0">>, list_to_binary(binary_to_list(TimeToken)++"?uuid="++epubnub:uuid()) ],
                                               EPN#epn.is_ssl) of
                                           {[[], _], _} = Result ->
                                               Result;
                                           {[Messages, _], _} = Result ->
                                               lists:foreach(Function, Messages),
-                                              Result;
-                                              Req ->
-                                                lager:log(info, self(), "Req ~p", [Req])
+                                              Result
                                       end,
-
         %% Check if a terminate message has been sent to us, stop and return ok atom if so
         receive
             terminate ->
@@ -232,20 +225,18 @@ uuid() ->
 
 -spec request(tuple(), list(binary()), boolean()) -> json_term().
 request(Client, URLList, IsSSL) ->
-    lager:log(info, self(), "REQUEST ~p ~p", [URLList, Client]),
-    case Client of
-        undefined ->
-            Protocol = case IsSSL of
+    Protocol = case IsSSL of
                            true ->
                                <<"https:/">>;
                            false ->
                                <<"http:/">>
                        end,
-            URL = bin_join([Protocol | URLList], <<"/">>),
+    URL = bin_join([Protocol | URLList], <<"/">>),
+    case Client of
+        undefined ->
             {ok, 200, _RespHeaders, Client1} = hackney:request(get, URL, [], <<>>, []);
         Client ->
-            Path = bin_join([<<"/">> | tl(URLList)], <<"/">>),
-            {ok, 200, _RespHeaders, Client1} = hackney:send_request(Client, {get, Path, [], <<>>})
+            {ok, 200, _RespHeaders, Client1} = hackney:send_request(Client, {get, URL, [], <<>>})
     end,
 
     {ok, Body, Client2} = hackney:body(Client1),
